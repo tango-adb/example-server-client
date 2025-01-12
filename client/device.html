@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Adb Client</title>
+</head>
+
+<body>
+  <div id="app"></div>
+  <script type="importmap">
+      {
+        "imports": {
+          "@yume-chan/adb": "https://unpkg.com/@yume-chan/adb@1.1.0/esm/index.js",
+          "@yume-chan/stream-extra": "https://unpkg.com/@yume-chan/stream-extra@1.0.0/esm/index.js",
+          "@yume-chan/struct": "https://unpkg.com/@yume-chan/struct@1.0.0/esm/index.js",
+          "@yume-chan/event": "https://unpkg.com/@yume-chan/event@1.0.0/esm/index.js",
+          "@yume-chan/no-data-view": "https://unpkg.com/@yume-chan/no-data-view@1.0.0/esm/index.js",
+          "@yume-chan/async": "https://unpkg.com/@yume-chan/async@4.0.2/esm/index.js"
+        }
+      }
+  </script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel" data-type="module" data-presets="typescript" src="/src/device.ts"></script>
+</body>
+
+</html>
