@@ -1,4 +1,4 @@
-import { Adb, AdbDaemonTransport } from "@yume-chan/adb";
+import { AdbDaemonTransport, type AdbTransport } from "@yume-chan/adb";
 import {
   AdbDaemonWebUsbDeviceManager,
   type AdbDaemonWebUsbDevice,
@@ -16,8 +16,6 @@ const CredentialStore = new AdbNodeJsCredentialStore();
 
 const clients = new Set<WebSocket>();
 
-const observer = Manager.trackDevices();
-
 function sendDeviceList(client: WebSocket, devices: AdbDaemonWebUsbDevice[]) {
   client.send(
     JSON.stringify(
@@ -31,11 +29,14 @@ function sendDeviceList(client: WebSocket, devices: AdbDaemonWebUsbDevice[]) {
   );
 }
 
+const observer = Manager.trackDevices();
 observer.onListChange((devices) => {
   for (const client of clients) {
     sendDeviceList(client, devices);
   }
 });
+
+const devices = new Map<string, AdbTransport>();
 
 const httpServer = createServer(async (request, response) => {
   const url = new URL(request.url!, "http://localhost");
@@ -47,7 +48,6 @@ const httpServer = createServer(async (request, response) => {
   }
 
   const [, serial] = segments;
-
   if (!serial) {
     response.writeHead(400, { "Access-Control-Allow-Origin": "*" }).end();
     return;
@@ -68,12 +68,11 @@ const httpServer = createServer(async (request, response) => {
       connection,
       credentialStore: CredentialStore,
     });
-    const adb = new Adb(transport);
 
-    devices.set(serial, adb);
+    devices.set(serial, transport);
   }
 
-  const adb = devices.get(serial)!;
+  const transport = devices.get(serial)!;
 
   response
     .writeHead(200, {
@@ -82,29 +81,18 @@ const httpServer = createServer(async (request, response) => {
     })
     .end(
       JSON.stringify({
-        maxPayloadSize: adb.maxPayloadSize,
-        product: adb.banner.product,
-        model: adb.banner.model,
-        device: adb.banner.device,
-        features: adb.banner.features,
+        maxPayloadSize: transport.maxPayloadSize,
+        product: transport.banner.product,
+        model: transport.banner.model,
+        device: transport.banner.device,
+        features: transport.banner.features,
       })
     );
 });
-httpServer.listen(
-  {
-    host: "0.0.0.0",
-    port: 8080,
-  },
-  () => {
-    console.log("Server listening on http://localhost:8080");
-  }
-);
 
 const wsServer = new WebSocketServer({
   server: httpServer,
 });
-
-const devices = new Map<string, Adb>();
 
 wsServer.addListener("connection", async (client, request) => {
   const url = new URL(request.url!, "http://localhost");
@@ -128,14 +116,14 @@ wsServer.addListener("connection", async (client, request) => {
           break;
         }
 
-        const adb = devices.get(serial);
-        if (!adb) {
+        const transport = devices.get(serial);
+        if (!transport) {
           client.close();
           break;
         }
 
         try {
-          const socket = await adb.createSocket(service);
+          const socket = await transport.connect(service);
 
           client.binaryType = "arraybuffer";
 
@@ -170,3 +158,13 @@ wsServer.addListener("connection", async (client, request) => {
       client.close();
   }
 });
+
+httpServer.listen(
+  {
+    host: "0.0.0.0",
+    port: 8080,
+  },
+  () => {
+    console.log("Server listening on http://localhost:8080");
+  }
+);
