@@ -127,6 +127,7 @@ wsServer.addListener("connection", async (client, request) => {
 
           client.binaryType = "arraybuffer";
 
+          // Read from ADB socket and write to WebSocket
           socket.readable.pipeTo(
             new WritableStream({
               async write(chunk) {
@@ -138,6 +139,7 @@ wsServer.addListener("connection", async (client, request) => {
             })
           );
 
+          // Read from WebSocket and write to ADB socket
           const writer = socket.writable.getWriter();
           client.addListener("message", async (message) => {
             client.pause();
@@ -145,10 +147,17 @@ wsServer.addListener("connection", async (client, request) => {
             client.resume();
           });
 
+          // Propagate ADB socket closure to WebSocket
+          void socket.closed.then(() => {
+            client.close();
+          });
+
+          // Propagate WebSocket closure to ADB socket
           client.addListener("close", () => {
             socket.close();
           });
         } catch {
+          // ADB socket open failed
           client.close();
           break;
         }
