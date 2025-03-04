@@ -94,7 +94,7 @@ const wsServer = new WebSocketServer({
   server: httpServer,
 });
 
-wsServer.addListener("connection", async (client, request) => {
+wsServer.on("connection", async (client, request) => {
   const url = new URL(request.url!, "http://localhost");
   const segments = url.pathname.substring(1).split("/");
 
@@ -103,7 +103,7 @@ wsServer.addListener("connection", async (client, request) => {
       sendDeviceList(client, await Manager.getDevices());
 
       clients.add(client);
-      client.addListener("close", () => {
+      client.on("close", () => {
         clients.delete(client);
       });
 
@@ -141,7 +141,7 @@ wsServer.addListener("connection", async (client, request) => {
 
           // Read from WebSocket and write to ADB socket
           const writer = socket.writable.getWriter();
-          client.addListener("message", async (message) => {
+          client.on("message", async (message) => {
             client.pause();
             await writer.write(new Uint8Array(message as ArrayBuffer));
             client.resume();
@@ -153,7 +153,7 @@ wsServer.addListener("connection", async (client, request) => {
           });
 
           // Propagate WebSocket closure to ADB socket
-          client.addListener("close", () => {
+          client.on("close", () => {
             socket.close();
           });
         } catch {
