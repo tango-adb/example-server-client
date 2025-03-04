@@ -123,7 +123,7 @@ wsServer.addListener("connection", async (client, request) => {
         }
 
         try {
-          const socket = await transport.connect(service);
+          const socket = await transport.connect(decodeURIComponent(service));
 
           client.binaryType = "arraybuffer";
 

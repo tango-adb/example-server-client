@@ -46,7 +46,7 @@ class WebSocketTransport implements AdbTransport {
 
   async connect(service: string): Promise<AdbSocket> {
     const socket = new WebSocketStream(
-      `ws://localhost:8080/device/${this.serial}/${service}`
+      `ws://localhost:8080/device/${this.serial}/${encodeURIComponent(service)}`
     );
     const open = await socket.opened;
     this.#sockets.add(socket);
