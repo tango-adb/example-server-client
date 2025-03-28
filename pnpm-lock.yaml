@@ -23,7 +23,7 @@ importers:
       '@yume-chan/adb':
         specifier: ^1.1.0
         version: 1.1.0
-      '@yume-chan/adb-daemon-webusb':
+      '@yume-chan/adb-server-node-tcp':
         specifier: ^1.1.0
         version: 1.1.0
       '@yume-chan/async':
@@ -32,9 +32,6 @@ importers:
       '@yume-chan/stream-extra':
         specifier: ^1.0.0
         version: 1.0.0
-      usb:
-        specifier: ^2.14.0
-        version: 2.14.0
       ws:
         specifier: ^8.18.0
         version: 8.18.0
@@ -204,8 +201,8 @@ packages:
   '@types/ws@8.5.13':
     resolution: {integrity: sha512-osM/gWBTPKgHV8XkTunnegTRIsvF6owmf5w+JtAfOw472dptdm0dlGv4xCt6GwQRcC2XVOvvRE/0bAoQcL2QkA==}
 
-  '@yume-chan/adb-daemon-webusb@1.1.0':
-    resolution: {integrity: sha512-Q0jkEX/V/PTMZov3udN0gR4uwxfJz0EmKBmRqdJl619rXGC8OfkqlnbrOI4aOjCebm2HCc6d3jVAmjo5sIB7OQ==}
+  '@yume-chan/adb-server-node-tcp@1.1.0':
+    resolution: {integrity: sha512-B1BQIHyX4+scZ8wbvJhYarGP3nncDh/ZXGOz6kxy++Cnka1+vRsl5WDmiCKk1LIoDPiPEGg1UbI1fBnAnrib/g==}
 
   '@yume-chan/adb@1.1.0':
     resolution: {integrity: sha512-AC2HhTtxvEPrAQfMP9qDC3FI5Uc6U8j4oH+WMOQ+PKqzI4eme1X3V7OXgPNkrLTQ9SUWgLRw+lgzpvyTvNYpng==}
@@ -447,14 +444,6 @@ packages:
     resolution: {integrity: sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg==}
     engines: {node: '>= 0.6'}
 
-  node-addon-api@8.3.0:
-    resolution: {integrity: sha512-8VOpLHFrOQlAH+qA0ZzuGRlALRA6/LVh8QJldbrC4DY0hXoMP0l4Acq8TzFC018HztWiRqyCEj2aTWY2UvnJUg==}
-    engines: {node: ^18 || ^20 || >= 21}
-
-  node-gyp-build@4.8.4:
-    resolution: {integrity: sha512-LA4ZjwlnUblHVgq0oBF3Jl/6h/Nvs5fzBLwdEF4nuxnFdsfajde4WfxtJr3CaiH+F6ewcIB/q4jQ4UzPyid+CQ==}
-    hasBin: true
-
   npm-run-path@4.0.1:
     resolution: {integrity: sha512-S48WzZW777zhNIrn7gxOlISNAqi9ZC/uQFnRdbeIHhZhCA6UqpkOT8T1G7BvfdgP4Er8gF4sUbaS0i7QvIfCWw==}
     engines: {node: '>=8'}
@@ -574,10 +563,6 @@ packages:
   uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
 
-  usb@2.14.0:
-    resolution: {integrity: sha512-I3lzVOH21BsO6qPYvx1C7Ji08lbuM0qmsEtNGAphqlhNME5cz/vExY+jIXZl+HQIRybI/sTxdyLab5tALsL69w==}
-    engines: {node: '>=12.22.0 <13.0 || >=14.17.0'}
-
   vary@1.1.2:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
     engines: {node: '>= 0.8'}
@@ -691,11 +676,10 @@ snapshots:
     dependencies:
       '@types/node': 22.10.5
 
-  '@yume-chan/adb-daemon-webusb@1.1.0':
+  '@yume-chan/adb-server-node-tcp@1.1.0':
     dependencies:
-      '@types/w3c-web-usb': 1.0.10
       '@yume-chan/adb': 1.1.0
-      '@yume-chan/event': 1.0.0
+      '@yume-chan/async': 4.0.2
       '@yume-chan/stream-extra': 1.0.0
       '@yume-chan/struct': 1.0.0
 
@@ -942,10 +926,6 @@ snapshots:
 
   negotiator@0.6.3: {}
 
-  node-addon-api@8.3.0: {}
-
-  node-gyp-build@4.8.4: {}
-
   npm-run-path@4.0.1:
     dependencies:
       path-key: 3.1.1
@@ -1071,12 +1051,6 @@ snapshots:
   uri-js@4.4.1:
     dependencies:
       punycode: 2.3.1
-
-  usb@2.14.0:
-    dependencies:
-      '@types/w3c-web-usb': 1.0.10
-      node-addon-api: 8.3.0
-      node-gyp-build: 4.8.4
 
   vary@1.1.2: {}
 

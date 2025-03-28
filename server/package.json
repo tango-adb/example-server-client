@@ -12,10 +12,9 @@
   "type": "module",
   "dependencies": {
     "@yume-chan/adb": "^1.1.0",
-    "@yume-chan/adb-daemon-webusb": "^1.1.0",
+    "@yume-chan/adb-server-node-tcp": "^1.1.0",
     "@yume-chan/async": "^4.0.2",
     "@yume-chan/stream-extra": "^1.0.0",
-    "usb": "^2.14.0",
     "ws": "^8.18.0"
   },
   "devDependencies": {

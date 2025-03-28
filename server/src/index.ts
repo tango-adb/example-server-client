@@ -1,35 +1,26 @@
-import { AdbDaemonTransport, type AdbTransport } from "@yume-chan/adb";
-import {
-  AdbDaemonWebUsbDeviceManager,
-  type AdbDaemonWebUsbDevice,
-} from "@yume-chan/adb-daemon-webusb";
+import { AdbServerClient, type AdbTransport } from "@yume-chan/adb";
+import { AdbServerNodeTcpConnector } from "@yume-chan/adb-server-node-tcp";
 import { delay } from "@yume-chan/async";
 import { WritableStream } from "@yume-chan/stream-extra";
 import { createServer } from "node:http";
-import { WebUSB } from "usb";
 import { WebSocket, WebSocketServer } from "ws";
-import { AdbNodeJsCredentialStore } from "./credential.js";
 
-const usb = new WebUSB({ allowAllDevices: true });
-const Manager = new AdbDaemonWebUsbDeviceManager(usb);
-const CredentialStore = new AdbNodeJsCredentialStore();
+const Manager = new AdbServerClient(new AdbServerNodeTcpConnector({ host: '127.0.0.1', port: 5037 }));
 
 const clients = new Set<WebSocket>();
 
-function sendDeviceList(client: WebSocket, devices: AdbDaemonWebUsbDevice[]) {
+function sendDeviceList(client: WebSocket, devices: AdbServerClient.Device[]) {
   client.send(
     JSON.stringify(
       devices.map((device) => ({
         serial: device.serial,
-        name: device.name,
-        vendorId: device.raw.vendorId,
-        productId: device.raw.productId,
+        name: device.model,
       }))
     )
   );
 }
 
-const observer = Manager.trackDevices();
+const observer = await Manager.trackDevices();
 observer.onListChange((devices) => {
   for (const client of clients) {
     sendDeviceList(client, devices);
@@ -54,20 +45,13 @@ const httpServer = createServer(async (request, response) => {
   }
 
   if (!devices.has(serial)) {
-    const [device] = await Manager.getDevices({
-      filters: [{ serialNumber: serial }],
-    });
+    const device = observer.current.find(device => device.serial === serial);
     if (!device) {
       response.writeHead(401, { "Access-Control-Allow-Origin": "*" }).end();
       return;
     }
 
-    const connection = await device.connect();
-    const transport = await AdbDaemonTransport.authenticate({
-      serial,
-      connection,
-      credentialStore: CredentialStore,
-    });
+    const transport = await Manager.createTransport(device);
 
     devices.set(serial, transport);
   }
